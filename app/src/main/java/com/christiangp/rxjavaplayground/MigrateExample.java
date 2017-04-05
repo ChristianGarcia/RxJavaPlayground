@@ -1,10 +1,11 @@
 package com.christiangp.rxjavaplayground;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class MigrateExample {
 
@@ -37,7 +38,7 @@ public class MigrateExample {
                                                               dataSourceV2.save(searchDB);
                                                           }
                                                       })
-                                                      .ignoreElement()
+                                                      .toCompletable()
                                                       .toMaybe()
                            )
                            .ignoreElement();
@@ -45,14 +46,14 @@ public class MigrateExample {
 
     public interface DataSourceV2 {
 
-        Maybe<List<SavedSearch>> getAll();
+        Single<List<SavedSearch>> getAll();
 
         void save(SearchDB searchDB);
     }
 
     public interface DataSourceV1 {
 
-        Maybe<List<SearchDB>> fetchAllSearchesV1();
+        Single<List<SearchDB>> fetchAllSearchesV1();
     }
 
     public static class SearchDB {

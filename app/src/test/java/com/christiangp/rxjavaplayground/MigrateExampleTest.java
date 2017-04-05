@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -41,30 +42,14 @@ public class MigrateExampleTest {
         migrateExample = new MigrateExample(v1, v2);
     }
 
-    @Test
-    public void givenV2IsEmpty_WhenMigrate_ThenMigrateFromV1()
-            throws Exception {
 
-        given(v2.getAll()).willReturn(Maybe.empty());
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
-
-        migrateExample.migrate()
-                      .test()
-                      .assertNoErrors()
-                      .assertComplete();
-
-        then(v2).should()
-                .save(searchV1_1);
-        then(v2).should()
-                .save(searchV1_2);
-    }
 
     @Test
     public void givenV2HasEmptyElements_WhenMigrate_ThenMigrateFromV1()
             throws Exception {
 
-        given(v2.getAll()).willReturn(Maybe.just(Collections.emptyList()));
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+        given(v2.getAll()).willReturn(Single.just(Collections.emptyList()));
+        given(v1.fetchAllSearchesV1()).willReturn(Single.just(Arrays.asList(searchV1_1, searchV1_2)));
 
         migrateExample.migrate()
                       .test()
@@ -78,10 +63,10 @@ public class MigrateExampleTest {
     }
 
     @Test
-    public void givenV2HAsItems_WhenMigrate_ThenSaveNothingFromV1()
+    public void givenV2HasItems_WhenMigrate_ThenSaveNothingFromV1()
             throws Exception {
-        given(v2.getAll()).willReturn(Maybe.just(Collections.singletonList(searchV2_1)));
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+        given(v2.getAll()).willReturn(Single.just(Collections.singletonList(searchV2_1)));
+        given(v1.fetchAllSearchesV1()).willReturn(Single.just(Arrays.asList(searchV1_1, searchV1_2)));
 
         migrateExample.migrate()
                       .test()
@@ -92,30 +77,14 @@ public class MigrateExampleTest {
                 .save(any());
     }
 
-    @Test
-    public void givenV2IsEmpty_WhenMigrate2_ThenMigrateFromV1()
-            throws Exception {
 
-        given(v2.getAll()).willReturn(Maybe.empty());
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
-
-        migrateExample.migrate2()
-                      .test()
-                      .assertNoErrors()
-                      .assertComplete();
-
-        then(v2).should()
-                .save(searchV1_1);
-        then(v2).should()
-                .save(searchV1_2);
-    }
 
     @Test
     public void givenV2HasEmptyElements_WhenMigrate2_ThenMigrateFromV1()
             throws Exception {
 
-        given(v2.getAll()).willReturn(Maybe.just(Collections.emptyList()));
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+        given(v2.getAll()).willReturn(Single.just(Collections.emptyList()));
+        given(v1.fetchAllSearchesV1()).willReturn(Single.just(Arrays.asList(searchV1_1, searchV1_2)));
 
         migrateExample.migrate2()
                       .test()
@@ -131,8 +100,8 @@ public class MigrateExampleTest {
     @Test
     public void givenV2HAsItems_WhenMigrate2_ThenSaveNothingFromV1()
             throws Exception {
-        given(v2.getAll()).willReturn(Maybe.just(Collections.singletonList(searchV2_1)));
-        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+        given(v2.getAll()).willReturn(Single.just(Collections.singletonList(searchV2_1)));
+        given(v1.fetchAllSearchesV1()).willReturn(Single.just(Arrays.asList(searchV1_1, searchV1_2)));
 
         migrateExample.migrate2()
                       .test()
