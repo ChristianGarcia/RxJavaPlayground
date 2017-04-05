@@ -91,4 +91,55 @@ public class MigrateExampleTest {
         then(v2).should(never())
                 .save(any());
     }
+
+    @Test
+    public void givenV2IsEmpty_WhenMigrate2_ThenMigrateFromV1()
+            throws Exception {
+
+        given(v2.getAll()).willReturn(Maybe.empty());
+        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+
+        migrateExample.migrate2()
+                      .test()
+                      .assertNoErrors()
+                      .assertComplete();
+
+        then(v2).should()
+                .save(searchV1_1);
+        then(v2).should()
+                .save(searchV1_2);
+    }
+
+    @Test
+    public void givenV2HasEmptyElements_WhenMigrate2_ThenMigrateFromV1()
+            throws Exception {
+
+        given(v2.getAll()).willReturn(Maybe.just(Collections.emptyList()));
+        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+
+        migrateExample.migrate2()
+                      .test()
+                      .assertNoErrors()
+                      .assertComplete();
+
+        then(v2).should()
+                .save(searchV1_1);
+        then(v2).should()
+                .save(searchV1_2);
+    }
+
+    @Test
+    public void givenV2HAsItems_WhenMigrate2_ThenSaveNothingFromV1()
+            throws Exception {
+        given(v2.getAll()).willReturn(Maybe.just(Collections.singletonList(searchV2_1)));
+        given(v1.fetchAllSearchesV1()).willReturn(Maybe.just(Arrays.asList(searchV1_1, searchV1_2)));
+
+        migrateExample.migrate2()
+                      .test()
+                      .assertNoErrors()
+                      .assertComplete();
+
+        then(v2).should(never())
+                .save(any());
+    }
 }

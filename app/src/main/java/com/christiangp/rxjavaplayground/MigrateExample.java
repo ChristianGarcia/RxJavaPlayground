@@ -17,7 +17,7 @@ public class MigrateExample {
         this.dataSourceV2 = dataSourceV2;
     }
 
-    public Completable migrate2() {
+    public Completable migrate() {
         return dataSourceV2.getAll()
                            .filter(searchesV2 -> !searchesV2.isEmpty())
                            .switchIfEmpty(dataSourceV1.fetchAllSearchesV1()
@@ -28,7 +28,7 @@ public class MigrateExample {
                            .ignoreElement();
     }
 
-    public Completable migrate() {
+    public Completable migrate2() {
         return dataSourceV2.getAll()
                            .filter(searchesV2 -> !searchesV2.isEmpty())
                            .switchIfEmpty(dataSourceV1.fetchAllSearchesV1()
