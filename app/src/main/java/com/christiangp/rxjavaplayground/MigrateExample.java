@@ -1,10 +1,8 @@
 package com.christiangp.rxjavaplayground;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class MigrateExample {
@@ -20,35 +18,16 @@ public class MigrateExample {
 
     public Completable migrate() {
         return dataSourceV2.getAll()
-                           .filter(searchesV2 -> !searchesV2.isEmpty())
-                           .switchIfEmpty(dataSourceV1.fetchAllSearchesV1()
-                                                      .flatMapObservable(Observable::fromIterable)
-                                                      .doOnNext(dataSourceV2::save)
-                                                      .ignoreElements()
-                                                      .toMaybe())
-                           .ignoreElement();
-    }
-
-    public Completable migrate2() {
-        return dataSourceV2.getAll()
-                           .filter(searchesV2 -> !searchesV2.isEmpty())
-                           .switchIfEmpty(dataSourceV1.fetchAllSearchesV1()
-                                                      .doOnSuccess(searchDBs -> {
-                                                          for (SearchDB searchDB : searchDBs) {
-                                                              dataSourceV2.save(searchDB);
-                                                          }
-                                                      })
-                                                      .toCompletable()
-                                                      .toMaybe()
-                           )
-                           .ignoreElement();
+                           .filter(List::isEmpty)
+                           .flatMapCompletable(ignoredEmptyList -> dataSourceV1.fetchAllSearchesV1()
+                                                                               .flatMapCompletable(dataSourceV2::save));
     }
 
     public interface DataSourceV2 {
 
         Single<List<SavedSearch>> getAll();
 
-        void save(SearchDB searchDB);
+        Completable save(List<SearchDB> searchDB);
     }
 
     public interface DataSourceV1 {
