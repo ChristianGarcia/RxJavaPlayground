@@ -17,10 +17,11 @@ public class MigrateExample {
     }
 
     public Completable migrate() {
+        final Completable v1ToV2 = dataSourceV1.fetchAllSearchesV1()
+                                               .flatMapCompletable(dataSourceV2::save);
         return dataSourceV2.getAll()
                            .filter(List::isEmpty)
-                           .flatMapCompletable(ignoredEmptyList -> dataSourceV1.fetchAllSearchesV1()
-                                                                               .flatMapCompletable(dataSourceV2::save));
+                           .flatMapCompletable(ignoredEmptyList -> v1ToV2);
     }
 
     public interface DataSourceV2 {
